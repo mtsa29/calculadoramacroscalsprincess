@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Calorías y Macronutrientes</title>
+    <style>
+        body {
+            background-color: #ffe4e1;
+            font-family: 'Playfair Display', serif;
+            color: #333;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 90%;
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            margin-top: 50px;
+        }
+        h1, h2 {
+            color: #ff69b4;
+        }
+        input, select {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #ff69b4;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #ff1493;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Calculadora de Calorías y Macronutrientes</h1>
+        <div>
+            <h2>Calorías</h2>
+            <label for="peso">Peso (kg):</label>
+            <input type="number" id="peso">
+            <label for="altura">Altura (cm):</label>
+            <input type="number" id="altura">
+            <label for="edad">Edad:</label>
+            <input type="number" id="edad">
+            <label for="genero">Género:</label>
+            <select id="genero">
+                <option value="masculino">Masculino</option>
+                <option value="femenino">Femenino</option>
+            </select>
+            <label for="actividad">Nivel de Actividad:</label>
+            <select id="actividad">
+                <option value="sedentario">Sedentario</option>
+                <option value="ligero">Ligero</option>
+                <option value="moderado">Moderado</option>
+                <option value="activo">Activo</option>
+                <option value="muy_activo">Muy Activo</option>
+            </select>
+            <label for="objetivo">Objetivo:</label>
+            <select id="objetivo">
+                <option value="mantener">Mantener Peso</option>
+                <option value="perder">Perder Peso</option>
+                <option value="ganar">Ganar Peso</option>
+            </select>
+            <button onclick="calcularCalorias()">Calcular Calorías</button>
+        </div>
+        <div id="resultadoCalorias" class="result"></div>
+        
+        <div>
+            <h2>Macronutrientes</h2>
+            <label for="objetivoMacros">Objetivo:</label>
+            <select id="objetivoMacros">
+                <option value="mantener">Mantener Peso</option>
+                <option value="perder">Perder Peso</option>
+                <option value="ganar">Ganar Peso</option>
+            </select>
+            <button onclick="calcularMacros()">Calcular Macronutrientes</button>
+        </div>
+        <div id="resultadoMacros" class="result"></div>
+    </div>
+
+    <script>
+        function calcularCalorias() {
+            var peso = parseFloat(document.getElementById('peso').value);
+            var altura = parseFloat(document.getElementById('altura').value);
+            var edad = parseInt(document.getElementById('edad').value);
+            var genero = document.getElementById('genero').value;
+            var actividad = document.getElementById('actividad').value;
+            var objetivo = document.getElementById('objetivo').value;
+
+            var bmr;
+
+            if (genero === 'masculino') {
+                bmr = 10 * peso + 6.25 * altura - 5 * edad + 5;
+            } else {
+                bmr = 10 * peso + 6.25 * altura - 5 * edad - 161;
+            }
+
+            var factorActividad;
+
+            switch (actividad) {
+                case 'sedentario':
+                    factorActividad = 1.2;
+                    break;
+                case 'ligero':
+                    factorActividad = 1.375;
+                    break;
+                case 'moderado':
+                    factorActividad = 1.55;
+                    break;
+                case 'activo':
+                    factorActividad = 1.725;
+                    break;
+                case 'muy_activo':
+                    factorActividad = 1.9;
+                    break;
+            }
+
+            var calorias = bmr * factorActividad;
+
+            if (objetivo === 'perder') {
+                calorias -= 500;
+            } else if (objetivo === 'ganar') {
+                calorias += 500;
+            }
+
+            document.getElementById('resultadoCalorias').innerHTML = 'Calorías diarias recomendadas: ' + calorias.toFixed(2);
+        }
+
+        function calcularMacros() {
+            var objetivo = document.getElementById('objetivoMacros').value;
+            var calorias = parseFloat(document.getElementById('resultadoCalorias').textContent.split(': ')[1]);
+
+            var proteinas, grasas, carbohidratos;
+
+            switch (objetivo) {
+                case 'mantener':
+                    proteinas = 0.3 * calorias / 4;
+                    grasas = 0.25 * calorias / 9;
+                    carbohidratos = 0.45 * calorias / 4;
+                    break;
+                case 'perder':
+                    proteinas = 0.4 * calorias / 4;
+                    grasas = 0.3 * calorias / 9;
+                    carbohidratos = 0.3 * calorias / 4;
+                    break;
+                case 'ganar':
+                    proteinas = 0.25 * calorias / 4;
+                    grasas = 0.2 * calorias / 9;
+                    carbohidratos = 0.55 * calorias / 4;
+                    break;
+            }
+
+            document.getElementById('resultadoMacros').innerHTML = 
+                'Macronutrientes diarios recomendados:<br>' +
+                'Proteínas: ' + proteinas.toFixed(2) + 'g<br>' +
+                'Grasas: ' + grasas.toFixed(2) + 'g<br>' +
+                'Carbohidratos: ' + carbohidratos.toFixed(2) + 'g';
+        }
+    </script>
+</body>
+</html>
